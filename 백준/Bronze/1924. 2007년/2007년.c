@@ -8,54 +8,15 @@
 #include <stdio.h>
 
 int main(void) {
-    int month, day;
+    int x, y;
+    int month[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
     char week[7][4] = {"SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"};
+
+    scanf("%d %d", &x, &y);
     
-    scanf("%d %d", &month, &day);
+    for(int i = 0; i < x - 1; i++)
+        y += month[i];
     
-    switch (month) {
-        case 1: // 1월 1일 월요일
-            printf("%s\n", week[day % 7]);
-            break;
-        case 2: // 2월 1일 목요일
-            printf("%s\n", week[(day + 3) % 7]);
-            break;
-        case 3: // 3월 1일 목요일
-            printf("%s\n", week[(day + 3) % 7]);
-            break;
-        case 4: // 4월 1일 일요일
-            printf("%s\n", week[(day + 6) % 7]);
-            break;
-        case 5: // 5월 1일 화요일
-            printf("%s\n", week[(day + 1) % 7]);
-            break;
-        case 6: // 6월 1일 금요일
-            printf("%s\n", week[(day + 4) % 7]);
-            break;
-        case 7: // 7월 1일 일요일
-            printf("%s\n", week[(day + 6) % 7]);
-            break;
-        case 8: // 8월 1일 수요일
-            printf("%s\n", week[(day + 2) % 7]);
-            break;
-        case 9: // 9월 1일 토요일
-            printf("%s\n", week[(day + 5) % 7]);
-            break;
-        case 10: // 10월 1일 월요일
-            printf("%s\n", week[day % 7]);
-            break;
-        case 11: // 11월 1일 목요일
-            printf("%s\n", week[(day + 3) % 7]);
-            break;
-        case 12: // 12월 1일 토요일
-            printf("%s\n", week[(day + 5) % 7]);
-            break;
-            
-        default:
-            break;
-    }
-    
-    
-    
+    printf("%s\n", week[y % 7]);
     return 0;
 }
