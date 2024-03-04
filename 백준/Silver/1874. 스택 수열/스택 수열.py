@@ -17,7 +17,7 @@ for _ in range(N):
     if operand_list[-1] == temp:
         operand_list.pop()
         opcode_list.append('-')
-    elif operand_list[-1] > temp:
+    else:
         isPossible = False
         print("NO")
         sys.exit()
