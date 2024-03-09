@@ -1,18 +1,18 @@
 import sys
 
-parenthesis = sys.stdin.readline().rstrip()
-stick = []
+input_ch = sys.stdin.readline().rstrip()
+sticks = 0
+last_ch = ''
 result = 0
 
-for i in range(len(parenthesis) - 1):
-    if parenthesis[i] == '(' and parenthesis[i + 1] == ')':
-        if stick:
-            for i in range(len(stick)):
-                stick[i] += 1
-    elif parenthesis[i] == '(':
-        stick.append(1)
-    elif parenthesis[i - 1] != '(' and parenthesis[i] == ')':
-        result += stick.pop()
-if stick:
-    result += stick.pop()
+for ch in input_ch:
+    if ch == '(':
+        sticks += 1
+    else:
+        sticks -= 1
+        if last_ch == '(':
+            result += sticks
+        else:
+            result += 1
+    last_ch = ch
 print(result)
