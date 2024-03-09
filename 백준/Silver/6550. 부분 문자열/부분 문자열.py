@@ -8,7 +8,7 @@ while True:
     count = 0
 
     for t in T:
-        if count < len(S) and S[count] == t:
+        if S[count] == t:
             count += 1
             if count == len(S):
                 print('Yes')
