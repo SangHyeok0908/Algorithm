@@ -2,29 +2,30 @@ import sys
 
 N = int(sys.stdin.readline())
 parenthesis_list = list(sys.stdin.readline().rstrip())
-open_list = []
-continue_list = []
-count = 0
-max_count = 0
 
-for index, parenthesis in enumerate(parenthesis_list):
-    if parenthesis == '(':
-        open_list.append(index)
-    elif open_list:
-        continue_list.append(open_list.pop())
-        continue_list.append(index)
-continue_list.sort()
+num_list = [0 for _ in range(N)]
+stack = []
 
-for i in range(1, len(continue_list)):
-    if continue_list[i - 1] + 1 == continue_list[i]:
-        count += 1
+for id, parenthesis in enumerate(parenthesis_list):
+    if (parenthesis == '('):
+        stack.append(id)
     else:
-        count = 0
-    
-    if max_count < count:
-        max_count = count
+        if (stack):
+            target_id = stack.pop()
+            num_list[id] = 1
+            num_list[target_id] = 1
 
-if max_count < 1:
-    print(0)
-else:
-    print(max_count + 1)
+max_len = 0
+temp_len = 0
+for num in num_list:
+    if (num == 1):
+        temp_len += 1
+    else:
+        if (max_len < temp_len):
+            max_len = temp_len
+        temp_len = 0
+
+if (max_len < temp_len):
+    max_len = temp_len
+        
+print(max_len)
