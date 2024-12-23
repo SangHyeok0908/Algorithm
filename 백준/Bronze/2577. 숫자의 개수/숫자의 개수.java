@@ -1,3 +1,6 @@
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 class Main {
@@ -8,16 +11,26 @@ class Main {
         int B = scanner.nextInt();
         int C = scanner.nextInt();
         String result = String.valueOf(A * B * C);
+        Map<Character, Integer> answer = new HashMap<>(Map.of(
+                '0', 0,
+                '1', 0,
+                '2', 0,
+                '3', 0,
+                '4', 0,
+                '5', 0,
+                '6', 0,
+                '7', 0,
+                '8', 0,
+                '9', 0
+        ));
 
-        for(int i = 0; i <= 9; i++) {
-            int count = 0;
-            for(char c : result.toCharArray()) {
-                if (i == c - '0') {
-                    count++;
-                }
-            }
+        for(char c : result.toCharArray()) {
+            answer.replace(c, answer.get(c) + 1);
+        }
 
-            System.out.println(count);
+        Collection<Integer> values = answer.values();
+        for(Integer v : values) {
+            System.out.println(v);
         }
     }
 }
