@@ -1,11 +1,10 @@
 import java.io.*;
-import java.util.Iterator;
 import java.util.LinkedList;
 
 class Main {
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-//        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
         LinkedList<Integer> list = new LinkedList<>();
         LinkedList<Integer> result = new LinkedList<>();
 
@@ -26,13 +25,11 @@ class Main {
         }
 
         int size = result.size();
-//        bw.write("<");
-        System.out.print("<");
+        bw.write("<");
         for(int i = 0; i < size - 1; i++) {
-            System.out.print(result.pop() + ", ");
+            bw.write(result.pop() + ", ");
         }
-        System.out.println(result.pop() + ">");
-//        bw.write(">" + "\n");
-//        bw.close();
+        bw.write(result.pop() + ">" + "\n");
+        bw.close();
     }
 }
