@@ -33,6 +33,8 @@ public class Main {
         boolean isSplit = false;
 
         while (!isSplit) {
+            int seaCount = 0;
+            
             isVisited = new boolean[N][M];
 
             for (int i = 0; i < N; i++) {
@@ -43,16 +45,9 @@ public class Main {
                 }
             }
 
-//            for (int i = 0; i < N; i++) {
-//                for (int j = 0; j < M; j++) {
-//                    System.out.print(graph[i][j] + " ");
-//                }
-//                System.out.println();
-//            }
-//            System.out.println("==========");
-
             for (int i = 0; i < N; i++) {
                 boolean isBreak = false;
+
                 for (int j = 0; j < M; j++) {
                     if (graph[i][j] != 0) {
                         isSplit = bfs(j, i);
@@ -60,20 +55,17 @@ public class Main {
                         break;
                     }
                 }
+
                 if (isBreak) break;
             }
-
-            if (!isSplit) {
-                int seaCount = 0;
-
-                for (int i = 0; i < N; i++) {
-                    for (int j = 0; j < M; j++) {
-                        if (graph[i][j] == 0) seaCount++;
-                    }
+            
+            for (int i = 0; i < N; i++) {
+                for (int j = 0; j < M; j++) {
+                    if (graph[i][j] == 0) seaCount++;
                 }
-
-                if (N * M == seaCount) return 0;
             }
+
+            if (N * M == seaCount) return 0;
 
             result++;
         }
