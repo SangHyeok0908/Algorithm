@@ -34,7 +34,7 @@ public class Main {
 
         while (!isSplit) {
             int seaCount = 0;
-            
+
             isVisited = new boolean[N][M];
 
             for (int i = 0; i < N; i++) {
@@ -58,7 +58,7 @@ public class Main {
 
                 if (isBreak) break;
             }
-            
+
             for (int i = 0; i < N; i++) {
                 for (int j = 0; j < M; j++) {
                     if (graph[i][j] == 0) seaCount++;
@@ -108,19 +108,18 @@ public class Main {
     }
 
     static void melt(int x, int y) {
-        int left = x - 1;
-        int right = x + 1;
-        int top = y - 1;
-        int bottom = y + 1;
         int count = 0;
 
-        if (isInGraph(left, y) && !isVisited[y][left] && graph[y][left] == 0) count++;
-        if (isInGraph(right, y) && !isVisited[y][right] && graph[y][right] == 0) count++;
-        if (isInGraph(x, top) && !isVisited[top][x] && graph[top][x] == 0) count++;
-        if (isInGraph(x, bottom) && !isVisited[bottom][x] && graph[bottom][x] == 0) count++;
+        for (int i = 0; i < 4; i++) {
+            int curX = x + dx[i];
+            int curY = y + dy[i];
+
+            if (isInGraph(curX, curY) && !isVisited[curY][curX] && graph[curY][curX] == 0) count++;
+        }
 
         isVisited[y][x] = true; // 같은 날 바다가 된 빙하 좌표는 무시하여야 하기 때문에 방문처리를 한다.
         graph[y][x] -= count;
+
         if (graph[y][x] < 0) graph[y][x] = 0;
     }
 
