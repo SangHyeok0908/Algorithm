@@ -10,7 +10,7 @@ public class Main {
     public static void main(String[] args) throws IOException {
         int N = Integer.parseInt(br.readLine());
 
-        hanoi(N, 1, 3, 2);
+        hanoi(N, 1, 2, 3);
 
         bw.write(answerList.size() + "\n");
         for(int[] i : answerList) {
@@ -20,14 +20,14 @@ public class Main {
         bw.close();
     }
 
-    static void hanoi(int N, int start, int target, int assist) throws IOException {
+    static void hanoi(int N, int start, int assist, int target) {
         if (N == 1) {
             answerList.add(new int[]{start, target});
             return;
         }
 
-        hanoi(N - 1, start, assist, target);
+        hanoi(N - 1, start, target, assist);
         answerList.add(new int[]{start, target});
-        hanoi(N - 1, assist, target, start);
+        hanoi(N - 1, assist, start, target);
     }
 }
