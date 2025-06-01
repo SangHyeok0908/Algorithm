@@ -1,53 +1,52 @@
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Deque;
-import java.util.LinkedList;
+import java.util.*;
 
-public class Main {
-    public static void main(String[] args) throws IOException {
+class Main {
+
+    public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        int[] inputs = Arrays.stream(br.readLine().split(" ")).mapToInt(Integer::parseInt).toArray();
+        int N = inputs[0];
+        int M = inputs[1];
+        int[] nums = Arrays.stream(br.readLine().split(" ")).mapToInt(Integer::parseInt).toArray();
+        Deque<Integer> queue = new ArrayDeque<>();
+        int result = 0;
 
-        int answer = 0;
-        String[] input = br.readLine().split(" ");
-        int N = Integer.parseInt(input[0]);
-        int M = Integer.parseInt(input[1]);
-        Deque<Integer> deque = new LinkedList<>();
-        for (int i = 1; i <= N; i++) {
-            deque.addLast(i);
+        for (int i = 0; i < N; i++) {
+            queue.addLast(i + 1);
         }
 
-        String[] input2 = br.readLine().split(" ");
-        ArrayList<Integer> array = new ArrayList<>();
-        for (int i = 0; i < M; i++) {
-            array.add(Integer.parseInt(input2[i]));
-        }
-
-        while (!array.isEmpty()) {
+        for (int i : nums) {
             int idx = 0;
-            for (Integer i : deque) {
-                if (array.get(0) == i) {
-                    break;
-                }
-
+            for (Integer j : queue) {
+                if (i == j) break;
                 idx++;
             }
 
-            while (array.get(0) != deque.getFirst()) {
-                if (idx <= deque.size() - 1 - idx) {
-                    deque.addLast(deque.pollFirst());
-                } else {
-                    deque.addFirst(deque.pollLast());
+//            for (Integer j : queue)
+//                System.out.print(j + " ");
+//            System.out.println();
+
+            if (idx <= queue.size() / 2) {
+                while(i != queue.peekFirst()) {
+                    queue.add(queue.pollFirst());
+                    result++;
                 }
-
-                answer++;
+            } else {
+                while(i != queue.peekFirst()) {
+                    queue.addFirst(queue.pollLast());
+                    result++;
+                }
             }
-
-            deque.pop();
-            array.remove(0);
+//            System.out.println("result = " + result);
+            queue.pollFirst();
         }
 
-        bw.write(answer + "\n");
-        bw.close();
+//        for (Integer j : queue)
+//            System.out.print(j + " ");
+//        System.out.println();
+
+        System.out.println(result);
+        br.close();
     }
 }
