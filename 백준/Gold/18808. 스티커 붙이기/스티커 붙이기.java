@@ -1,113 +1,133 @@
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.*;
 
 public class Main {
 
-    static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-    static BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
-    static int N, M, K;
-    static int[][] noteBook;
-    static int[] dy = new int[]{0, 0, -1, 1};
-    static int[] dx = new int[]{-1, 1, 0, 0};
+  static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+  static int N, M, K;
+  static int[][] paper;
 
-    public static void main(String[] args) throws IOException {
-        int answer = 0;
-        String[] s = br.readLine().split(" ");
+  public static void main(String[] args) throws Exception {
+    int count = 0;
+    String[] input = br.readLine().split(" ");
+    N = Integer.parseInt(input[0]);
+    M = Integer.parseInt(input[1]);
+    K = Integer.parseInt(input[2]);
+    paper = new int[N][M];
 
-        N = Integer.parseInt(s[0]);
-        M = Integer.parseInt(s[1]);
-        K = Integer.parseInt(s[2]);
-        noteBook = new int[N][M];
+    for (int i = 0; i < K; i++) {
+      input = br.readLine().split(" ");
+      int R = Integer.parseInt(input[0]);
+      int C = Integer.parseInt(input[1]);
+      int[][] sticker = new int[R][C];
 
-        for (int k = 0; k < K; k++) {    // 스티커의 개수만큼 반복
-            String[] s1 = br.readLine().split(" ");
-            int R = Integer.parseInt(s1[0]);
-            int C = Integer.parseInt(s1[1]);
-            int[][] sticker = new int[R][C];
+      for (int j = 0; j < R; j++) {
+        sticker[j] = Arrays.stream(br.readLine().split(" ")).mapToInt(Integer::parseInt).toArray();
+      }
 
-            for (int r = 0; r < R; r++) {
-                sticker[r] = Arrays.stream(br.readLine().split(" ")).mapToInt(Integer::parseInt).toArray();
-            }
-
-            func(sticker, 0);
-        }
-
-        for (int i = 0; i < N; i++) {
-            for (int j = 0; j < M; j++) {
-                if (noteBook[i][j] == 1) answer++;
-            }
-        }
-
-        bw.write(answer + "\n");
-        br.close();
-        bw.close();
+      pushSticker(sticker);
     }
 
-    static void print(int[][] matrix) {
-        for(int i = 0; i < matrix.length; i++) {
-            for(int j = 0; j < matrix[0].length; j++) {
-                System.out.print(matrix[i][j] + " ");
+    // System.out.println("============");
+    for (int i = 0; i < N; i++) {
+      for (int j = 0; j < M; j++) {
+        // System.out.print(paper[i][j] + " ");
+        if (paper[i][j] == 1) {
+          count++;
+        }
+      }
+      // System.out.println("");
+    }
+
+    System.out.println(count);
+  }
+
+  static void pushSticker(int[][] sticker) {
+    for (int rotationCount = 0; rotationCount < 4; rotationCount++) {
+      for (int i = 0; i < N; i++) {
+        if (N - i < sticker.length)
+          break;
+
+        for (int j = 0; j < M; j++) {
+          if (M - j < sticker[0].length)
+            break;
+
+          if (paper[i][j] == 0 || sticker[0][0] == 0) {
+            if (checkPush(sticker, i, j)) {
+              push(sticker, i, j);
+              return;
             }
-            System.out.println();
+          }
         }
-        System.out.println("============");
+      }
+
+      sticker = rotate(sticker);
+
+      // System.out.println("============");
+      // for(int i = 0; i < sticker.length; i++) {
+      //   for(int j = 0; j < sticker[0].length; j++) {
+      //     System.out.print(sticker[i][j] + " ");
+      //   }
+      //   System.out.println("");
+      // }
     }
+  }
 
-    static void func(int[][] sticker, int cnt) {
-        if (cnt == 4) return;
-
-        boolean isBreak = false;
-
-        for (int i = 0; i < N; i++) {
-            for (int j = 0; j < M; j++) {
-                if (isBlank(sticker, i, j)) {
-                    attachSticker(sticker, i, j);
-                    isBreak = true;
-                    break;
-                }
-            }
-
-            if (isBreak) break;
-        }
-
-        if (!isBreak) {
-            func(rotateSticker(sticker), cnt + 1);
-        }
+  static boolean checkPush(int[][] sticker, int startY, int startX) {
+    for (int i = 0, y = startY; i < sticker.length; i++, y++) {
+      for (int j = 0, x = startX; j < sticker[0].length; j++, x++) {
+        if (paper[y][x] == 1 && sticker[i][j] == 1)
+          return false;
+      }
     }
+    return true;
+  }
 
-    static int[][] rotateSticker(int[][] sticker) {
-        int rowSize = sticker.length;
-        int colSize = sticker[0].length;
-        int[][] result = new int[colSize][rowSize];
-
-        for(int i = 0; i < rowSize; i++) {
-            for(int j = 0; j < colSize; j++) {
-                result[j][rowSize - 1 - i] = sticker[i][j];
-            }
-        }
-        return result;
+  static void push(int[][] sticker, int startY, int startX) {
+    for (int i = 0, y = startY; i < sticker.length; i++, y++) {
+      for (int j = 0, x = startX; j < sticker[0].length; j++, x++) {
+        if (sticker[i][j] == 1)
+          paper[y][x] = 1;
+        // else if (paper[y][x] == 1 && sticker[i][j] == 1)
+          // System.out.println("ERROR!!!");
+      }
     }
+  }
 
-    static boolean isFitSize(int[][] sticker, int startY, int startX) {
-        return sticker.length <= N - startY && sticker[0].length <= M - startX;
+  static int[][] rotate(int[][] sticker) {
+    int row = sticker.length;
+    int col = sticker[0].length;
+    int[][] copy = new int[col][row];
+
+    for (int i = 0; i < row; i++) {
+      for (int j = 0; j < col; j++) {
+        copy[j][row - 1 - i] = sticker[i][j];
+      }
     }
-
-    static boolean isBlank(int[][] sticker, int startY, int startX) {
-        if (!isFitSize(sticker, startY, startX)) return false;
-
-        for (int i = startY, stickerY = 0; stickerY < sticker.length; i++, stickerY++) {
-            for (int j = startX, stickerX = 0; stickerX < sticker[0].length; j++, stickerX++) {
-                if (sticker[stickerY][stickerX] == 1 && noteBook[i][j] == 1) return false;
-            }
-        }
-        return true;
-    }
-
-    static void attachSticker(int[][] sticker, int startY, int startX) {
-        for (int i = startY, stickerY = 0; stickerY < sticker.length; i++, stickerY++) {
-            for (int j = startX, stickerX = 0; stickerX < sticker[0].length; j++, stickerX++) {
-                if (sticker[stickerY][stickerX] == 1) noteBook[i][j] = 1;
-            }
-        }
-    }
+    return copy;
+  }
 }
+
+
+/*
+1, 1, 1, 1, 1
+0, 0, 0, 1, 0
+
+0, 1
+0, 1
+0, 1
+1, 1
+0, 1
+
+(0, 0) -> (0, 1)
+(0, 1) -> (1, 1)
+(0, 2) -> (1, 2)
+(0, 3) -> (1, 3)
+(0, 4) -> (1, 4)
+
+(1, 0) -> (0, 0)
+(1, 1) -> (1, 0)
+(1, 2) -> (2, 0)
+(1, 3) -> (3, 0)
+ */
