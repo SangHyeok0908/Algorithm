@@ -14,33 +14,31 @@ public class Solution {
         for (int t = 1; t <= 10; t++) {
             br.readLine();
             ladder = new int[N][N];
+            isVisited = new boolean[N][N];
+
+            int endX = 0;
             for (int i = 0; i < N; i++) {
                 StringTokenizer st = new StringTokenizer(br.readLine());
+                
                 for (int j = 0; j < N; j++) {
                     ladder[i][j] = Integer.parseInt(st.nextToken());
-                }
-            }
-
-            for (int i = 0; i < N; i++) {
-                if (ladder[0][i] == 1) {
-                    isVisited = new boolean[N][N];
-                    if (dfs(0, i)) {
-                        answer.append("#" + t + " " + i + "\n");
-                        break;
+                    if (i == N - 1 && ladder[i][j] == 2) {
+                        endX = j;
                     }
                 }
             }
+
+            int startX = dfs(N - 1, endX);
+            answer.append("#" + t + " " + startX + "\n");
         }
         System.out.println(answer);
     }
 
-    static boolean dfs(int y, int x) {
+    static int dfs(int y, int x) {
         isVisited[y][x] = true;
 
-        if (y == N - 1) {
-            if (ladder[y][x] == 2)
-                return true;
-            return false;
+        if (y == 0) {
+            return x;
         }
 
         if (x - 1 >= 0 && ladder[y][x - 1] == 1 && !isVisited[y][x - 1])
@@ -49,6 +47,6 @@ public class Solution {
         if (x + 1 < N && ladder[y][x + 1] == 1 && !isVisited[y][x + 1])
             return dfs(y, x + 1);
 
-        return dfs(y + 1, x);
+        return dfs(y - 1, x);
     }
 }
