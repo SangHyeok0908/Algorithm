@@ -1,116 +1,110 @@
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.*;
 
 public class Main {
 
-    static final int[] dx = new int[]{-1, 1, 0, 0};
-    static final int[] dy = new int[]{0, 0, -1, 1};
-    static int[][] graph;
-    static Queue<int[]> startPointQueue = new ArrayDeque<>();
+    static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    static int[] dy = new int[] { -1, 1, 0, 0 };
+    static int[] dx = new int[] { 0, 0, -1, 1 };
     static int N;
-    static int islandCount = 1;
+    static int[][] matrix;
+    // static int[][][] map;
 
-    public static void main(String[] args) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+    public static void main(String[] args) throws Exception {
         N = Integer.parseInt(br.readLine());
-
-        graph = new int[N][N];
-
+        matrix = new int[N][N];
+        // map = new int[N][N][2];
         for (int i = 0; i < N; i++) {
-            graph[i] = Arrays.stream(br.readLine().split(" ")).mapToInt(Integer::parseInt).toArray();
+            StringTokenizer st = new StringTokenizer(br.readLine());
+            for (int j = 0; j < N; j++) {
+                matrix[i][j] = Integer.parseInt(st.nextToken());
+            }
         }
 
+        int number = 2;
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
-                if (graph[i][j] == 1) {
-                    classify(i, j);
+                if (matrix[i][j] == 1) {
+                    setMatrix(i, j, number++);
                 }
             }
         }
 
-        int result = solve();
-        if (result == Integer.MAX_VALUE) bw.write("0\n");
-        else bw.write((result - 1) + "\n");
-        bw.close();
+        int answer = Integer.MAX_VALUE;
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < N; j++) {
+                if (matrix[i][j] != 0) {
+                    answer = Math.min(answer, calculate(i, j));
+                }
+            }
+        }
+        System.out.println(answer == Integer.MAX_VALUE ? 0 : answer);
     }
 
-    /*
-     각 대륙을 분류하는 함수
-     분리는 2부터 시작하는 숫자로 1씩 증가하여 2 대륙, 3 대륙, 4 대륙..
-     대륙에 인접하는 바다를 startPointQueue에 삽입
-     */
-    static void classify(int startY, int startX) {
-        Queue<int[]> islandQueue = new ArrayDeque<>();
-        boolean[][] isVisited = new boolean[N][N];
+    static void setMatrix(int y, int x, int number) {
+        Queue<int[]> queue = new ArrayDeque<>();
+        queue.add(new int[] { y, x });
+        matrix[y][x] = number;
 
-        islandCount++;
-        graph[startY][startX] = islandCount;
-        islandQueue.add(new int[]{startY, startX});
-        isVisited[startY][startX] = true;
-
-        while (!islandQueue.isEmpty()) {
-            int[] poll = islandQueue.poll();
+        while (!queue.isEmpty()) {
+            int[] poll = queue.poll();
             for (int i = 0; i < 4; i++) {
-                int curX = poll[1] + dx[i];
                 int curY = poll[0] + dy[i];
+                int curX = poll[1] + dx[i];
 
-                if (!isInGraph(curY, curX) || isVisited[curY][curX]) continue;
+                if (!isIn(curY, curX) || matrix[curY][curX] != 1)
+                    continue;
 
-                isVisited[curY][curX] = true;
-
-                if (graph[curY][curX] == 0) {
-                    startPointQueue.add(new int[]{curY, curX, islandCount});
-                } else {
-                    graph[curY][curX] = islandCount;
-                    islandQueue.add(new int[]{curY, curX});
-                }
+                matrix[curY][curX] = number;
+                queue.add(new int[] { curY, curX });
             }
         }
     }
 
-    static int solve() {
+    static int calculate(int y, int x) {
         int result = Integer.MAX_VALUE;
+        int number = matrix[y][x];
+        Queue<int[]> queue = new ArrayDeque<>();
+        boolean[][] visited = new boolean[N][N];
 
-        while (!startPointQueue.isEmpty()) {
-            int[] poll = startPointQueue.poll();
+        queue.add(new int[] { y, x, 0 });
+        visited[y][x] = true;
 
-            result = Math.min(result, bfs(poll[0], poll[1], poll[2]));
+        while (!queue.isEmpty()) {
+            int[] poll = queue.poll();
+            for (int i = 0; i < 4; i++) {
+                int curY = poll[0] + dy[i];
+                int curX = poll[1] + dx[i];
+                int value = poll[2];
+
+                if (!isIn(curY, curX) || visited[curY][curX])
+                    continue;
+
+                visited[curY][curX] = true;
+
+                if (matrix[curY][curX] == 0) {
+                    queue.add(new int[] { curY, curX, value + 1 });
+                } else if (matrix[curY][curX] > number) {
+                    result = Math.min(result, value);
+                }
+            }
         }
+
         return result;
     }
 
-    static int bfs(int y, int x, int islandNumber) {
-        int result = Integer.MAX_VALUE;
-        int[][] distance = new int[N][N];
-        Queue<int[]> seaQueue = new ArrayDeque<>();
-
-        seaQueue.add(new int[]{y, x});
-        distance[y][x] = 1;
-
-        while (!seaQueue.isEmpty()) {
-            int[] poll = seaQueue.poll();
-
-            for (int i = 0; i < 4; i++) {
-                int curX = poll[1] + dx[i];
-                int curY = poll[0] + dy[i];
-
-                if (!isInGraph(curY, curX) || distance[curY][curX] != 0) continue;
-
-
-                if (graph[curY][curX] == 0) {
-                    distance[curY][curX] = distance[poll[0]][poll[1]] + 1;
-                    seaQueue.add(new int[]{curY, curX});
-                } else if (graph[curY][curX] != islandNumber) {
-                    distance[curY][curX] = distance[poll[0]][poll[1]] + 1;
-                    result = Math.min(result, distance[curY][curX]);
-                }
-            }
-        }
-        return result;
+    static boolean isIn(int y, int x) {
+        return y >= 0 && y < N && x >= 0 && x < N;
     }
 
-    static boolean isInGraph(int y, int x) {
-        return x >= 0 && x < N && y >= 0 && y < N;
+    static void print() {
+        System.out.println("============");
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < N; j++) {
+                System.out.print(matrix[i][j] + " ");
+            }
+            System.out.println();
+        }
     }
 }
