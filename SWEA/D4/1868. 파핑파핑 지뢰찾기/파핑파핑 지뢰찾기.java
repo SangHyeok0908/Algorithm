@@ -1,134 +1,118 @@
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+
+import java.io.*;
 import java.util.*;
 
 public class Solution {
 
-	static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-	static char[][] matrix;
-	static int N;
-	static boolean[][] click;
-	static int[] dy = new int[] { -1, 1, 0, 0, -1, -1, 1, 1 };
-	static int[] dx = new int[] { 0, 0, -1, 1, -1, 1, -1, 1 };
-	static Queue<int[]> queue = new ArrayDeque<>();
-	static int answer;
+  static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+  static int N;
+  static char[][] matrix;
+  static boolean[][] visited;
+  static int[] dy = new int[] { -1, 1, 0, 0, -1, -1, 1, 1 };
+  static int[] dx = new int[] { 0, 0, -1, 1, -1, 1, -1, 1 };
 
-	public static void main(String[] args) throws Exception {
-		int T = Integer.parseInt(br.readLine());
-		StringBuilder sb = new StringBuilder();
-		for (int t = 1; t <= T; t++) {
-			queue.clear();
-			N = Integer.parseInt(br.readLine());
-			matrix = new char[N][N];
-			click = new boolean[N][N];
-			answer = 0;
+  public static void main(String[] args) throws Exception {
+    int T = Integer.parseInt(br.readLine());
+    StringBuilder sb = new StringBuilder();
+    for (int t = 1; t <= T; t++) {
+      N = Integer.parseInt(br.readLine());
+      matrix = new char[N][N];
+      visited = new boolean[N][N];
+      for (int i = 0; i < N; i++) {
+        String input = br.readLine();
+        for (int j = 0; j < N; j++) {
+          matrix[i][j] = input.charAt(j);
+        }
+      }
 
-			for (int i = 0; i < N; i++) {
-				String input = br.readLine();
-				for (int j = 0; j < N; j++) {
-					matrix[i][j] = input.charAt(j);
-				}
-			}
+      List<int[]> zeroList = new ArrayList<>();
+      for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
+          if (matrix[i][j] == '.') {
+            setMatrix(i, j);
 
-			setMatrix();
-			addQueue(true);
-			addQueue(false);
+            if (matrix[i][j] == '0') {
+              zeroList.add(new int[] { i, j });
+            }
+          }
+        }
+      }
 
-//			print();
-			while (!queue.isEmpty()) {
-				int[] cur = queue.poll();
-				
-				if (click[cur[0]][cur[1]]) {
-					continue;
-				}
-				
-				spread(cur[0], cur[1]);
-				answer++;
-//				printClick();
-//				System.out.println("answer = " + answer);
-			}
+      // print();
 
-			sb.append("#" + t + " " + answer + "\n");
-		}
-		System.out.println(sb);
-	}
+      int answer = 0;
+      for (int[] pos : zeroList) {
+        int y = pos[0];
+        int x = pos[1];
 
-	static void setMatrix() {
-		for (int i = 0; i < N; i++) {
-			for (int j = 0; j < N; j++) {
-				if (matrix[i][j] == '*')
-					continue;
+        if (matrix[y][x] == '0' && !visited[y][x]) {
+          spread(y, x);
+          answer++;
+        }
+      }
 
-				int boom = findBoom(i, j);
-				matrix[i][j] = Character.forDigit(boom, 10);
-			}
-		}
-	}
+      for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
+          if (matrix[i][j] == '.' && !visited[i][j]) {
+            answer++;
+          }
+        }
+      }
 
-	static int findBoom(int y, int x) {
-		int result = 0;
-		for (int i = 0; i < 8; i++) {
-			int curY = y + dy[i];
-			int curX = x + dx[i];
+      sb.append("#")
+          .append(t)
+          .append(" ")
+          .append(answer)
+          .append("\n");
+    }
+    System.out.println(sb);
+  }
 
-			if (isIn(curY, curX) && matrix[curY][curX] == '*') {
-				result++;
-			}
-		}
-		return result;
-	}
+  static void setMatrix(int y, int x) {
+    boolean hasBoom = false;
 
-	static void addQueue(boolean isFirst) {
-		for (int i = 0; i < N; i++) {
-			for (int j = 0; j < N; j++) {
-				if (isFirst) {
-					if (matrix[i][j] == '0') {
-						queue.add(new int[] { i, j });
-					}
-				} else {
-					if (matrix[i][j] != '0' && Character.isDigit(matrix[i][j])) {
-						queue.add(new int[] { i, j });
-					}
-				}
-			}
-		}
-	}
+    for (int i = 0; i < 8; i++) {
+      int nearY = y + dy[i];
+      int nearX = x + dx[i];
 
-	static void spread(int y, int x) {
-		if (!isIn(y, x) || matrix[y][x] == '*' || click[y][x])
-			return;
+      if (isIn(nearY, nearX) && matrix[nearY][nearX] == '*') {
+        hasBoom = true;
+      }
+    }
+    matrix[y][x] = hasBoom ? matrix[y][x] : '0';
+  }
 
-		click[y][x] = true;
+  static void spread(int y, int x) {
+    if (!isIn(y, x) || visited[y][x]) {
+      return;
+    }
 
-		if (matrix[y][x] == '0') {
-			for (int i = 0; i < 8; i++) {
-				spread(y + dy[i], x + dx[i]);
-			}
-		}
-	}
+    visited[y][x] = true;
+    for (int i = 0; i < 8; i++) {
+      int nearY = y + dy[i];
+      int nearX = x + dx[i];
 
-	static boolean isIn(int y, int x) {
-		return y >= 0 && y < N && x >= 0 && x < N;
-	}
-	
-	static void print() {
-		System.out.println("=============");
-		for (int i = 0; i < N; i++) {
-			for (int j = 0; j < N; j++) {
-				System.out.print(matrix[i][j] + " ");
-			}
-			System.out.println();
-		}
-	}
-	
-	static void printClick() {
-		System.out.println("=============");
-		System.out.println("cick print");
-		for (int i = 0; i < N; i++) {
-			for (int j = 0; j < N; j++) {
-				System.out.print((click[i][j] ? 1 : 0) + " ");
-			}
-			System.out.println();
-		}
-	}
+      if (isIn(nearY, nearX)) {
+        if (matrix[nearY][nearX] == '0') {
+          spread(nearY, nearX);
+        } else {
+          visited[nearY][nearX] = true;
+        }
+      }
+    }
+  }
+
+  static boolean isIn(int y, int x) {
+    return y >= 0 && y < N && x >= 0 && x < N;
+  }
+
+  static void print() {
+    System.out.println("====================");
+    for (int i = 0; i < N; i++) {
+      for (int j = 0; j < N; j++) {
+        System.out.print(matrix[i][j] + " ");
+      }
+      System.out.println();
+    }
+  }
 }
