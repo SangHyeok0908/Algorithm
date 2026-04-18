@@ -1,62 +1,54 @@
+import java.util.*;
+
 class Solution {
     
-    boolean[] visited;
-    String target;
-    String[] words;
-    int n;
+    class Node {
+        String str;
+        int depth;
+        
+        Node(String str, int depth) {
+            this.str = str;
+            this.depth = depth;
+        }
+    }
+    
+    int wordLen;
     
     public int solution(String begin, String target, String[] words) {
-        int answer = Integer.MAX_VALUE;
-        this.n = words.length;
-        this.target = target;
-        this.words = words;
-
-        for (int i = 0; i < n; i++) {
-            if (possibleChange(begin, words[i])) {
-                // System.out.println("start = " + words[i]);
-
-                visited = new boolean[n];
-                visited[i] = true;
-                                
-                int result = dfs(words[i], 1);
-                answer = Math.min(answer, result);
+        int n = words.length;
+        Queue<Node> queue = new ArrayDeque<>();
+        boolean[] visited = new boolean[n];
+        wordLen = begin.length();
+        
+        queue.add(new Node(begin, 0));
+        
+        while(!queue.isEmpty()) {
+            Node poll = queue.poll();
+            
+            if (poll.str.equals(target)) {
+                return poll.depth;
+            }
+            
+            for (int i = 0; i < n; i++) {
+                if (!visited[i] && possible(poll.str, words[i])) {
+                    visited[i] = true;
+                    queue.add(new Node(words[i], poll.depth + 1));
+                }
             }
         }
-        
-        return answer == Integer.MAX_VALUE ? 0 : answer;
+        return 0;
     }
     
-    int dfs(String str, int depth) {
-        int result = Integer.MAX_VALUE;
-        
-        // System.out.println("change str = " + str);
-        
-        if (str.equals(target)) {
-            return depth;
-        }
-        
-        for (int i = 0; i < n; i++) {
-            if (!visited[i] && possibleChange(str, words[i])) {
-                visited[i] = true;
-                result = Math.min(result, dfs(words[i], depth + 1));
-                visited[i] = false;
-            }
-        }
-        return result;
-    }
-    
-    boolean possibleChange(String str1, String str2) {
-        char[] o = str1.toCharArray();
-        char[] t = str2.toCharArray();
+    boolean possible(String str1, String str2) {
+        char[] arr1 = str1.toCharArray();
+        char[] arr2 = str2.toCharArray();
         int cnt = 0;
         
-        for (int i = 0; i < o.length; i++) {
-        
-            if (o[i] == t[i]) {
+        for (int i = 0; i < wordLen; i++) {
+            if (arr1[i] == arr2[i]) {
                 cnt++;
             }    
         }
-        
-        return cnt == o.length - 1;
+        return cnt == wordLen - 1;
     }
 }
