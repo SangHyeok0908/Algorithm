@@ -1,52 +1,72 @@
 import java.util.*;
-import java.util.stream.*;
 
 class Solution {
+    
+    class Node {
+        int play, id;
+        
+        Node(int play, int id) {
+            this.play = play;
+            this.id = id;
+        }
+    }
+    
     public int[] solution(String[] genres, int[] plays) {
-        List<Integer> answer = new ArrayList<>();
+        Map<String, Queue<Node>> map = new HashMap<>();
         Map<String, Integer> cntMap = new HashMap<>();
-        Map<String, List<Integer>> idxMap = new HashMap<>();
         
         for (int i = 0; i < genres.length; i++) {
-            List<Integer> idxValue = idxMap.getOrDefault(genres[i], new ArrayList<>());
-            idxValue.add(i);
-            
-            cntMap.put(genres[i], cntMap.getOrDefault(genres[i], 0) + plays[i]);
-            idxMap.put(genres[i], idxValue);
-        }
-        
-        while(cntMap.size() > 0) {
-            int max = 0;
-            String maxName = null;
-            
-            for (String s : cntMap.keySet()) {
-                int temp = cntMap.get(s);
-                if (temp > max) {
-                    max = temp;
-                    maxName = s;
-                }    
+            if (map.containsKey(genres[i])) {
+                Queue<Node> q = map.get(genres[i]);
+                q.add(new Node(plays[i], i));
+                
+                cntMap.put(genres[i], cntMap.get(genres[i]) + plays[i]);
+                continue;
             }
             
-            cntMap.remove(maxName);
-            
-            List<int[]> playList = new ArrayList<>();
-            for (int i : idxMap.get(maxName)) {
-                playList.add(new int[]{i, plays[i]});
-            }
-            
-            playList.sort((a, b) -> {
-                if (a[1] < b[1]) return 1;
-                if (b[1] < a[1]) return -1;
-                return a[0] - b[0];
+            Queue<Node> q = new PriorityQueue<>((o1, o2) -> {
+                if (o1.play != o2.play) {
+                    return Integer.compare(o1.play, o2.play) * -1;
+                }
+                return Integer.compare(o1.id, o2.id);
             });
+
+            q.add(new Node(plays[i], i));
+            map.put(genres[i], q);
             
-            answer.add(playList.remove(0)[0]);
-            if (!playList.isEmpty())
-                answer.add(playList.remove(0)[0]);
+            cntMap.put(genres[i], plays[i]);
         }
         
-        return answer.stream()
-            .mapToInt(a -> a)
-            .toArray();
+        ArrayList<Integer> list = new ArrayList<>();
+        while(!map.isEmpty()) {
+            String genre = null;
+            int max = 0;
+            
+            for (String key : cntMap.keySet()) {
+                Integer play = cntMap.get(key);
+                
+                if (max < play) {
+                    genre = key;
+                    max = play;
+                }
+            }
+            
+            Queue<Node> q = map.remove(genre);
+            cntMap.remove(genre);
+            // System.out.println("key = " + genre);
+            
+            for (int i = 0; i < 2 && !q.isEmpty(); i++) {
+                Node node = q.poll();
+                
+                // System.out.println(node.id + " " + node.play);
+                list.add(node.id);
+            }
+        }
+        
+        int[] answer = new int[list.size()];
+        for (int i = 0; i < list.size(); i++) {
+            answer[i] = list.get(i);
+        }
+        return answer;
     }
 }
