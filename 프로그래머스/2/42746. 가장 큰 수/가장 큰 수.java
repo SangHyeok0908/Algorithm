@@ -1,21 +1,26 @@
 import java.util.*;
 
-class Solution {    
+class Solution {  
+    
     public String solution(int[] numbers) {
-        List<String> list = new ArrayList<>();
-        StringBuilder answer = new StringBuilder();
+        Queue<String> q = new PriorityQueue<>((o1, o2) -> {
+            String str1 = o1 + o2;
+            String str2 = o2 + o1;
+            return Integer.compare(Integer.parseInt(str1), Integer.parseInt(str2)) * -1;
+        });
         
-        for (int n : numbers) {
-            list.add(n + "");
+        for (int num : numbers) {
+            q.add(Integer.toString(num));    
         }
         
-        Collections.sort(list, (a, b) -> (b + a).compareTo(a + b));
-        
-        if(list.get(0).equals("0")) return "0";
-        
-        for(String l : list) {
-            answer.append(l);
+        if (q.peek().equals("0")) {
+            return "0";
         }
-        return answer.toString();
+        
+        StringBuilder sb = new StringBuilder();
+        while(!q.isEmpty()) {
+            sb.append(q.poll());
+        }
+        return sb.toString();
     }
 }
