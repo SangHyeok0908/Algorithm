@@ -1,41 +1,37 @@
 import java.util.*;
 
-class Process {
-    public int idx, priority;
-    
-    public Process(int idx, int priority) {
-        this.idx = idx;
-        this.priority = priority;
-    }
-}
-
 class Solution {
+    
     public int solution(int[] priorities, int location) {
-        int answer = 1;
-        Queue<Process> queue = new ArrayDeque<>();
+        Queue<int[]> queue = new ArrayDeque<>();
+        int n = priorities.length;
+        int cnt = 0;
         
-        for (int i = 0; i < priorities.length; i++) {
-            queue.add(new Process(i, priorities[i]));
+        for (int i = 0; i < n; i++) {
+            queue.add(new int[]{i, priorities[i]});
         }
         
         while(!queue.isEmpty()) {
-            Process poll = queue.poll();
-            boolean isBack = false;
+            int[] poll = queue.poll();
+            boolean isNotYet = false;
             
-            for (Process i : queue) {
-                if (poll.priority < i.priority) {
-                    queue.add(poll);
-                    isBack = true;
+            for (int[] i : queue) {
+                if (poll[1] < i[1]) {
+                    isNotYet = true;
                     break;
                 }
             }
             
-            if (!isBack) {
-                if (poll.idx == location)
-                    return answer;
-                answer++;
+            if (isNotYet) {
+                queue.add(poll);
+            } else {
+                cnt++;
+                
+                if (poll[0] == location) {
+                    return cnt;
+                }   
             }
         }
-        return answer;
+        return -1;
     }
 }
