@@ -1,46 +1,34 @@
 import java.util.*;
-import java.util.stream.*;
 
 class Solution {
+    
     public int[] solution(int[] progresses, int[] speeds) {
+        int idx = 0;
+        int n = progresses.length;
         List<Integer> result = new ArrayList<>();
-        Deque<Integer> deque = new ArrayDeque<>();
         
-        for (int i = 0; i < speeds.length; i++) {
-            int progress = (100 - progresses[i]) / speeds[i];
-            if ((100 - progresses[i]) % speeds[i] != 0) progress++;
+        while(idx < n) {            
+            for (int i = idx; i < n; i++) {
+                progresses[i] += speeds[i];
+                // System.out.printf("i = %d, progress = %d\n", i, progresses[i]);
+            }
             
-            deque.addLast(progress);    
-        }
-        
-        // for (Integer i : deque) {
-        //     System.out.println(i);
-        // }
-        // System.out.println("====");
-        
-        int prev = deque.pollFirst();
-        int cnt = 1;
-        while(!deque.isEmpty()) {
-            int cur = deque.pollFirst();
-            
-            if (prev >= cur) {
+            int cnt = 0;
+            while(idx < n && progresses[idx] >= 100) {
+                // System.out.printf("idx = %d, day = %d\n", idx, day);
                 cnt++;
-            }else {
+                idx++;
+            }
+            
+            if (cnt != 0) {
                 result.add(cnt);
-                // System.out.printf("prev = %d, cur = %d, cnt = %d\n", prev, cur, cnt);
-                cnt = 1;
-                prev = cur;
             }
         }
-        result.add(cnt);
         
-        // for(int i : result) {
-        //     System.out.println(i);    
-        // }
-        // System.out.println("=========");
-        
-        return result.stream()
-            .mapToInt(a -> a)
-            .toArray();
+        int[] answer = new int[result.size()];
+        for (int i = 0; i < result.size(); i++) {
+            answer[i] = result.get(i);
+        }
+        return answer;
     }
 }
