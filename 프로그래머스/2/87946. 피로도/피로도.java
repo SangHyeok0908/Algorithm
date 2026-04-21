@@ -1,49 +1,62 @@
 import java.util.*;
 
 class Solution {
+    
+    int n, k;
+    boolean[] visited;
+    int[] arr;
+    int answer = 0;
     int[][] dungeons;
-    int[][] arr;
-    boolean[] isVisited;
-    int k;
-    int answer = -1;
     
     public int solution(int k, int[][] dungeons) {
-        this.dungeons = dungeons;
         this.k = k;
-        arr = new int[dungeons.length][2];
-        isVisited = new boolean[dungeons.length];
+        this.dungeons = dungeons;
+        n = dungeons.length;
+        visited = new boolean[n];
+        arr = new int[n];
         
-        bruteForce(0);
+        dfs(0);
         return answer;
     }
     
-    void bruteForce(int depth) {
-        if (depth == dungeons.length) {
-            // System.out.println("=========");
-            // for (int i = 0; i < arr.length; i++) {
-            //     System.out.println(arr[i][0] + " " + arr[i][1]);
+    void dfs(int depth) {
+        if (depth == n) {
+            // for (int i = 0; i < n; i++) {
+            //     System.out.print(arr[i] + " ");
             // }
-            
-            int dungeon = k;
-            int cnt = 0;
-            for (int i = 0; i < arr.length; i++) {
-                if (arr[i][0] > dungeon || arr[i][1] > dungeon) continue;
-                
-                dungeon -= arr[i][1];
-                cnt++;
-            }
-            
-            answer = Math.max(answer, cnt);
+            // System.out.println();
+            answer = Math.max(answer, search());
             return;
         }
         
-        for (int i = 0; i < dungeons.length; i++) {
-            if (isVisited[i]) continue;
+        for (int i = 0; i < n; i++) {
+            if (visited[i]) {
+                continue;
+            }
             
-            arr[depth] = dungeons[i];
-            isVisited[i] = true;
-            bruteForce(depth + 1);
-            isVisited[i] = false;
+            visited[i] = true;
+            arr[depth] = i;
+            dfs(depth + 1);
+            
+            visited[i] = false;
         }
+    }
+    
+    int search() {
+        int cur = k;
+        int cnt = 0;
+        
+        // System.out.println("======");
+        for (int i = 0; i < n; i++) {
+            int idx = arr[i];
+            
+            if (cur >= dungeons[idx][0]) {
+                cur -= dungeons[idx][1];
+                cnt++;
+                
+                // System.out.println(dungeons[idx][0] + " " + dungeons[idx][1]);
+            }
+        }
+        return cnt;
     }
 }
