@@ -2,44 +2,43 @@ import java.util.*;
 
 class Solution {
     
-    ArrayList<Integer>[] nodes;
+    boolean[][] matrix;
     boolean[] visited;
+    int n;
     
     public int solution(int n, int[][] wires) {
         int answer = Integer.MAX_VALUE;
-        nodes = new ArrayList[n + 1];
+        this.n = n;
         
-        for (int i = 0; i < n; i++) {
-            nodes[i + 1] = new ArrayList<>();
+        matrix = new boolean[n + 1][n + 1];
+        
+        for (int[] w : wires) {
+            matrix[w[0]][w[1]] = true;
+            matrix[w[1]][w[0]] = true;
         }
         
-        for (int i = 0; i < n - 1; i++) {
-            nodes[wires[i][0]].add(wires[i][1]);
-            nodes[wires[i][1]].add(wires[i][0]);
+        for (int[] w : wires) {
+            matrix[w[0]][w[1]] = false;
+            matrix[w[1]][w[0]] = false;
+            visited = new boolean[n + 1];
+            
+            int res1 = dfs(w[0]);
+            int res2 = dfs(w[1]);
+            answer = Math.min(answer, Math.abs(res1 - res2));
+            matrix[w[0]][w[1]] = true;
+            matrix[w[1]][w[0]] = true;
         }
-        
-        for (int i = 0; i < n; i++) {
-            for (Integer node : nodes[i + 1]) {
-                visited = new boolean[n + 1];
-                visited[node] = true;
-                
-                int result = dfs(i + 1);
-                answer = Math.min(answer, Math.abs(n - result - result));
-            }
-        }
-        
         return answer;
     }
     
-    int dfs(int from) {
-        int result = 1;
-        visited[from] = true;
+    int dfs(int cur) {
+        int cnt = 1;
+        visited[cur] = true;
         
-        for (Integer to : nodes[from]) {
-            if (!visited[to]) {
-                result += dfs(to);
-            }
+        for (int i = 1; i <= n; i++) {
+            if (matrix[cur][i] && !visited[i])
+                cnt += dfs(i);
         }
-        return result;
+        return cnt;
     }
 }
