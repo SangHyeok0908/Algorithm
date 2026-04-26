@@ -2,32 +2,34 @@ import java.util.*;
 
 class Solution {
     
-    class Node {
-        List<Integer> top = new ArrayList<>(), bottom = new ArrayList<>();
-    }
-    
-    Node[] nodes;
-    boolean[] visited;
+    Set<Integer>[] topDp, bottomDp;
+    List<Integer>[] top, bottom;
     
     public int solution(int n, int[][] results) {
-        nodes = new Node[n + 1];
+        top = new ArrayList[n + 1];
+        bottom = new ArrayList[n + 1];
+        topDp = new HashSet[n + 1];
+        bottomDp = new HashSet[n + 1];
         
         for (int i = 1; i <= n; i++) {
-            nodes[i] = new Node();
+            top[i] = new ArrayList<>();
+            bottom[i] = new ArrayList<>();
+            topDp[i] = new HashSet<>();
+            bottomDp[i] = new HashSet<>();
         }
         
         for (int[] result : results) {
-            nodes[result[0]].bottom.add(result[1]);
-            nodes[result[1]].top.add(result[0]);
+            bottom[result[0]].add(result[1]);
+            top[result[1]].add(result[0]);
         }
         
         int answer = 0;
         for (int i = 1; i <= n; i++) {
-            visited = new boolean[n + 1];
-            int topCnt = dfs(i, true) - 1;
+            Set<Integer> topSet = dfs(i, topDp, top);
+            Set<Integer> bottomSet = dfs(i, bottomDp, bottom);
             
-            visited = new boolean[n + 1];
-            int bottomCnt = dfs(i, false) - 1;
+            int topCnt = topSet.size() - 1;
+            int bottomCnt = bottomSet.size() - 1;
             
             // System.out.printf("%d top = %d, bottom = %d\n", i, topCnt, bottomCnt);
             
@@ -39,25 +41,19 @@ class Solution {
         return answer;
     }
     
-    int dfs(int cur, boolean isTop) {
-        int result = 1;
-        
-        if (visited[cur]) {
-            return 0;
+    Set<Integer> dfs(int cur, Set<Integer>[] dp, List<Integer>[] edges) {
+        if (!dp[cur].isEmpty()) {
+            return dp[cur];
         }
         
-        visited[cur] = true;
+        Set<Integer> temp = new HashSet<>();
+        temp.add(cur);
         
-        if (isTop) {
-            for (int t : nodes[cur].top) {
-                result += dfs(t, isTop);        
-            }
-        } else {
-            for (int b : nodes[cur].bottom) {
-                result += dfs(b, isTop);
-            }
-            
+        for (int next : edges[cur]) {
+            temp.addAll(dfs(next, dp, edges));        
         }
-        return result;
+        
+        dp[cur] = temp;
+        return temp;
     }
 }
