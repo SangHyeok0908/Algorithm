@@ -6,36 +6,42 @@ class Solution {
         if (N == number) {
             return 1;
         }
-        
-        Set<Integer>[] dp = new HashSet[9];
-        int base = 0;
+
+        Set<Integer>[] set = new HashSet[9];
         
         for (int i = 1; i <= 8; i++) {
-            dp[i] = new HashSet<>();
-            base = base * 10 + N;
-            dp[i].add(base);
+            set[i] = new HashSet<>();
+            set[i].add(createSameNum(N, i));
         }
         
         for (int i = 2; i <= 8; i++) {
             for (int j = 1; j < i; j++) {
                 int k = i - j;
                 
-                for (int n1 : dp[j]) {
-                    for (int n2 : dp[k]) {
-                        dp[i].add(n1 + n2);
-                        dp[i].add(n1 - n2);
-                        dp[i].add(n1 * n2);  
-                        if (n2 != 0) {
-                            dp[i].add(n1 / n2);
+                for (int num1 : set[j]) {
+                    for (int num2 : set[k]) {
+                        set[i].add(num1 + num2);
+                        set[i].add(num1 - num2);
+                        set[i].add(num1 * num2);
+                        if (num2 != 0) {
+                            set[i].add(num1 / num2);
                         }
                     }
                 }
             }
             
-            if (dp[i].contains(number)) {
+            if (set[i].contains(number)) {
                 return i;
             }
         }
         return -1;
+    }
+    
+    int createSameNum(int N, int size) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < size; i++) {
+            sb.append(N);
+        }
+        return Integer.parseInt(sb.toString());
     }
 }
