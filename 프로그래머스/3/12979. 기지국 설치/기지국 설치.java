@@ -1,40 +1,31 @@
-import java.util.*;
-
 class Solution {
+    
+    int range;
 
     public int solution(int n, int[] stations, int w) {
-        List<Integer> sizeList = new ArrayList<>();
-        int prev = 1;
+        int answer = 0, prev = 1;
+        range = w + w + 1;
         
         for (int st : stations) {
             int end = st - w - 1;
             
             if (end >= prev) {
-                sizeList.add(end - prev + 1);    
+                answer += calculate(end - prev + 1);
             }
             
             prev = st + w + 1;
         }
         
         if (stations[stations.length - 1] + w + 1 <= n) {
-            sizeList.add(n - (stations[stations.length - 1] + w + 1) + 1);    
-        }
-        
-        // for (int i : sizeList) {
-        //     System.out.print(i + " ");
-        // }
-        // System.out.println();
-        
-        int answer = 0;
-        int range = w + w + 1;
-        for (int size : sizeList) {
-            // System.out.println(size + " " + range);
-            if (size % range > 0) {
-                answer += size / range + 1;
-            } else {
-                answer += size / range;
-            }
+            answer += calculate(n - (stations[stations.length - 1] + w + 1) + 1);
         }
         return answer;
+    }
+    
+    int calculate(int size) {
+        if (size % range > 0) {
+            return size / range + 1;
+        }
+        return size / range;
     }
 }
