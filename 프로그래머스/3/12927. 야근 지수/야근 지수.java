@@ -3,27 +3,28 @@ import java.util.*;
 class Solution {
     
     public long solution(int n, int[] works) {
-        Queue<Integer> queue = new PriorityQueue<>(Collections.reverseOrder());
-        long sum = 0;
-        for (int i = 0; i < works.length; i++) {
-            queue.add(works[i]);
-            sum += works[i];
+        Queue<Integer> queue = new PriorityQueue<>((o1, o2) -> Integer.compare(o2, o1));
+        for (int w : works) {
+            queue.add(w);
         }
         
-        if (sum <= n) {
-            return 0;
-        }
-        
-        for (int i = n; i > 0; i--) {
-            int num = queue.poll() - 1;
-            queue.add(num);
+        while(n > 0) {
+            int poll = queue.poll();
+            
+            if (poll == 0) {
+                break;
+            }
+            
+            queue.add(poll - 1);
+            n--;
         }
         
         long answer = 0;
         while(!queue.isEmpty()) {
-            answer += Math.pow(queue.poll(), 2);
+            int poll = queue.poll();
+            // System.out.println(poll);
+            answer += Math.pow(poll, 2);
         }
-        
         return answer;
     }
 }
