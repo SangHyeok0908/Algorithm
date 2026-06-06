@@ -1,10 +1,10 @@
 # [level 1] 약수의 합 - 12928 
 
-[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/12928) 
+[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/12928?language=javascript) 
 
 ### 성능 요약
 
-메모리: 86.6 MB, 시간: 0.06 ms
+메모리: 32.7 MB, 시간: 0.07 ms
 
 ### 구분
 
@@ -16,7 +16,7 @@
 
 ### 제출 일자
 
-2026년 04월 28일 17:29:38
+2026년 06월 06일 17:43:18
 
 ### 문제 설명
 
