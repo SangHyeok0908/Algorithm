@@ -1,12 +1,11 @@
 function solution(n)
 {
-    const str = String(n);
-    let answer = Number(str.substring(0, 1));
-    let i = 1;
+    let answer = 0;
     
-    while(i < str.length) {
-        answer += Number(str.substring(i, i + 1));
-        i++;
+    while(n > 0) {
+        answer += n % 10;
+        n = Math.floor(n / 10);
+        // console.log(n);
     }
 
     return answer;
