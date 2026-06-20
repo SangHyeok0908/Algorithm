@@ -3,31 +3,28 @@ import java.util.*;
 class Solution {
     
     public int[] solution(int[] progresses, int[] speeds) {
-        int idx = 0;
-        int n = progresses.length;
-        List<Integer> result = new ArrayList<>();
+        int day = 0;
+        int n = speeds.length;
+        int[] result = new int[101];
         
-        while(idx < n) {            
-            for (int i = idx; i < n; i++) {
-                progresses[i] += speeds[i];
-                // System.out.printf("i = %d, progress = %d\n", i, progresses[i]);
+        for (int i = 0; i < n; i++) {
+            while(day * speeds[i] + progresses[i] < 100) {
+                day++;
             }
             
-            int cnt = 0;
-            while(idx < n && progresses[idx] >= 100) {
-                // System.out.printf("idx = %d, day = %d\n", idx, day);
-                cnt++;
-                idx++;
-            }
-            
-            if (cnt != 0) {
-                result.add(cnt);
+            result[day]++;
+        }
+        
+        List<Integer> list = new ArrayList<>();
+        for (int i : result) {
+            if (i != 0) {
+                list.add(i);
             }
         }
         
-        int[] answer = new int[result.size()];
-        for (int i = 0; i < result.size(); i++) {
-            answer[i] = result.get(i);
+        int[] answer = new int[list.size()];
+        for (int i = 0; i < list.size(); i++) {
+            answer[i] = list.get(i);
         }
         return answer;
     }
