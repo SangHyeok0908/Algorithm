@@ -5,61 +5,42 @@ class Solution {
     int[] dy = { 1, 0, 0, -1 };
     int[] dx = { 0, -1, 1, 0 };
     char[] direct = { 'd', 'l', 'r', 'u' }; // 우선순위: 아래, 왼쪽, 오른쪽, 위쪽
-    int[][][] parent;
     
     public String solution(int n, int m, int x, int y, int r, int c, int k) {
-        Queue<int[]> q = new ArrayDeque<>();
-        List<String> result = new ArrayList<>();
-        parent = new int[n + 1][m + 1][k + 1];
+        int dist = Math.abs(x - r) + Math.abs(y - c);
+        StringBuilder sb = new StringBuilder();
         
-        q.add(new int[] { x, y, 0 });
-        
-        for (int i = 1; i <= n; i++) {
-            for (int j = 1; j <= m; j++) {
-                Arrays.fill(parent[i][j], -1);
-            }
+        if (dist > k || (k - dist) % 2 != 0) {
+            return "impossible";
         }
         
-        while(!q.isEmpty()) {
-            int[] cur = q.poll();
-            
-            if (cur[2] == k && cur[0] == r && cur[1] == c) {
-                return getPath(r, c, x, y, k);
-            }
-            
-            if (cur[2] >= k) {
-                continue;
-            }
-            
-            for (int i = 0; i < 4; i++) {
-                int nearY = cur[0] + dy[i];
-                int nearX = cur[1] + dx[i];
-                int nearCost = cur[2] + 1;
+        for (int curY = x, curX = y; k >= 0; k--) {            
+            for (int idx = 0; idx < 4; idx++) {
+                int tmpY = curY + dy[idx];
+                int tmpX = curX + dx[idx];
                 
-                if (nearY <= 0 || nearY > n || nearX <= 0 || nearX > m 
-                    || parent[nearY][nearX][nearCost] != -1) {
+                if (tmpY <= 0 || tmpY > n || 
+                    tmpX <= 0 || tmpX > m) {
                     continue;
                 }
                 
-                q.add(new int[] { nearY, nearX, nearCost });
-                parent[nearY][nearX][nearCost] = i;
+                int remaining = Math.abs(tmpY - r) + Math.abs(tmpX - c);
+                
+                // System.out.printf("k=%d, remaining=%d, direct=%d\n", k, remaining, idx);
+                
+                if (remaining > k || (k - remaining) % 2 != 0) {
+                    continue;
+                }
+                
+                // System.out.printf("k=%d, remaining=%d, direct=%d, (%d,%d)\n", 
+                //                   k, remaining, idx, tmpY, tmpX);
+                
+                curY = tmpY;
+                curX = tmpX;
+                sb.append(direct[idx]);
+                break;
             }
         }
-        return "impossible";
-    }
-    
-    String getPath(int startY, int startX, int endY, int endX, int k) {
-        StringBuilder sb = new StringBuilder();
-        int y = startY, x = startX;
-        int cnt = k;
-        
-        while(cnt > 0) {
-            int idx = parent[y][x][cnt--];
-            
-            sb.append(direct[idx]);
-            y -= dy[idx];
-            x -= dx[idx];
-        }
-        return sb.reverse().toString();
+        return sb.toString();
     }
 }
