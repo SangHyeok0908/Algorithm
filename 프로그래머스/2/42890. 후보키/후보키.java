@@ -12,39 +12,28 @@ class Solution {
         for (int i = 1; i <= colCnt; i++) {
             bruthForce(relation, new int[i], 0, 0);
         }
-        
         return answer.size();
     }
     
     void bruthForce(String[][] relation, int[] arr, int depth, int start) {
         if (arr.length == depth) {
-            // System.out.println("arr size = " + arr.length);
-            // for (int i = 0; i < arr.length; i++) {
-            //     System.out.print(arr[i] + " ");
-            // }
-            // System.out.println();
+            if (!isUnique(relation, arr)) {
+                return;
+            }
+            
+            Set<Integer> cur = new HashSet<>();
+            
+            for (int i : arr) {
+                cur.add(i);
+            }
+            
             for (Set<Integer> set : answer) {
-                int cnt = 0;
-                
-                for (int i : arr) {
-                    if (set.contains(i)) {
-                        cnt++;
-                    }
-                }
-                
-                if (cnt == set.size()) {
+                if (cur.containsAll(set)) {
                     return;
                 }
             }
             
-            if (isUnique(relation, arr)) {
-                Set<Integer> set = new HashSet<>();
-
-                for (int i : arr) {
-                    set.add(i);
-                }
-                answer.add(set);
-            }
+            answer.add(cur);
             return;
         }
         
@@ -58,12 +47,13 @@ class Solution {
         Set<String> set = new HashSet<>();
         
         for (String[] r : relation) {
-            String value = "";
+            StringBuilder sb = new StringBuilder();
             
             for (int i : arr) {
-                value += r[i];
+                sb.append(r[i])
+                    .append(",");
             }   
-            set.add(value);
+            set.add(sb.toString());
         }
         return set.size() == rowCnt;
     }
